@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel Q&amp;A | DFW UHI Model</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="inner">
+        <a class="brand" href="index.html">DFW Urban Heat Model</a>
+        <button class="nav-toggle" type="button">Menu</button>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="index.html">Overview</a>
+          <a href="methodology.html">Methodology</a>
+          <a href="results.html">Results</a>
+          <a href="panel-qa.html">Panel Q&amp;A</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero reveal">
+        <div>
+          <div class="eyebrow">Discussion Support</div>
+          <h1>Panel Q&amp;A briefing notes</h1>
+          <p>Use this page for likely technical and policy questions during presentation, with concise responses tied to your implemented pipeline.</p>
+        </div>
+      </section>
+
+      <section class="section reveal">
+        <div class="grid-2">
+          <article class="card">
+            <h2>What does the model do?</h2>
+            <p>The system produces monthly UHI estimates across DFW and forecasts monthly aggregate UHI severity. It is designed for place-based heat-risk diagnosis and short-horizon planning support.</p>
+          </article>
+          <article class="card">
+            <h2>Why trust the data?</h2>
+            <p>The pipeline uses established NASA, NOAA, ECMWF, USGS, and JRC products with documented QA metadata. Reliability statements and source links are presented in the methodology page.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section reveal">
+        <div class="card">
+          <h2>Likely questions and direct answers</h2>
+          <div class="step-list" style="margin-top: 0.9rem;">
+            <div class="step"><strong>Q: Why is ML R2 not very high?</strong><br />A: Leakage controls removed target-derived predictors. This yields realistic performance; the model still improves over seasonality-only baseline.</div>
+            <div class="step"><strong>Q: What is the strongest result?</strong><br />A: ARIMA materially outperforms seasonal naive on monthly forecasting, supporting operational scheduling use cases.</div>
+            <div class="step"><strong>Q: Is this model only DFW?</strong><br />A: Yes. Sampling and preprocessing both enforce DFW boundaries.</div>
+            <div class="step"><strong>Q: What assumptions matter most?</strong><br />A: Stable monthly seasonality, valid rural-mask baseline, and nonlinear predictor-response structure.</div>
+            <div class="step"><strong>Q: What are key limitations?</strong><br />A: Bounding-box geography, LST-based target vs direct air-temperature exposure, and residual heterogeneity at local scales.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section reveal">
+        <div class="grid-2">
+          <article class="card">
+            <h2>Defensible claims</h2>
+            <ul>
+              <li>The workflow is reproducible and auditable from source to figures.</li>
+              <li>Leakage safeguards were explicitly implemented and verified.</li>
+              <li>Temporal forecasting utility is benchmarked, not asserted.</li>
+              <li>Feature relevance aligns with physical intuition (seasonality, urban intensity, vegetation).</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h2>Recommended next iterations</h2>
+            <ul>
+              <li>Replace bounding box with administrative polygons for finer governance relevance.</li>
+              <li>Add uncertainty quantification for cross-sectional ML predictions.</li>
+              <li>Integrate intervention scenario features (tree expansion, impervious reduction).</li>
+              <li>Add external validation with station-level air-temperature proxies.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="inner">
+        <span>Use this page as speaking notes during panel review.</span>
+        <span>Detailed formulas remain in `paper.md`.</span>
+      </div>
+    </footer>
+
+    <script src="assets/js/common.js"></script>
+  </body>
+</html>

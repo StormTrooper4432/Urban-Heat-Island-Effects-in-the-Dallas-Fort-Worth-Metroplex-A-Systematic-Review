@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DFW UHI Panel Briefing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="inner">
+        <a class="brand" href="index.html">DFW Urban Heat Model</a>
+        <button class="nav-toggle" type="button">Menu</button>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="index.html">Overview</a>
+          <a href="methodology.html">Methodology</a>
+          <a href="results.html">Results</a>
+          <a href="panel-qa.html">Panel Q&amp;A</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero reveal">
+        <div>
+          <div class="eyebrow">Panel Presentation Site</div>
+          <h1>Urban Heat Island Modeling for Dallas-Fort Worth, Texas</h1>
+          <p>
+            This site summarizes a complete machine-learning and forecasting pipeline for UHI severity in DFW. It combines multi-source Earth observation data, leakage-controlled regression, and seasonal time-series forecasting.
+          </p>
+          <div class="button-row">
+            <a class="btn btn-primary" href="results.html">Open Results Dashboard</a>
+            <a class="btn btn-secondary" href="methodology.html">Review Methods</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="badge">Live Model Snapshot</div>
+          <p class="muted" id="data-status" style="margin-top: 0.7rem;">Loading metrics from output tables...</p>
+          <div class="metric-grid stagger" style="margin-top: 0.9rem;">
+            <div class="metric">
+              <div class="metric-label">Best ML Model</div>
+              <div class="metric-value" id="best-model-name">...</div>
+              <div class="metric-sub">Leakage-controlled benchmark</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Best ML RMSE</div>
+              <div class="metric-value" id="best-model-rmse">...</div>
+              <div class="metric-sub">Lower is better</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">ARIMA RMSE</div>
+              <div class="metric-value" id="arima-rmse">...</div>
+              <div class="metric-sub">Monthly forecast error</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">ARIMA Gain vs Naive</div>
+              <div class="metric-value" id="arima-improvement">...</div>
+              <div class="metric-sub">Relative RMSE improvement</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section reveal">
+        <div class="section-header">
+          <h2>Why this model exists</h2>
+          <p class="muted">The workflow is designed for policy and planning conversations where panel members need transparent evidence for what drives heat exposure and how it evolves over time.</p>
+        </div>
+        <div class="grid-3">
+          <article class="card">
+            <h3>Spatial diagnosis</h3>
+            <p>Estimate monthly UHI intensity at sampled points across DFW to identify high-risk built environments and persistent cooling deficits.</p>
+          </article>
+          <article class="card">
+            <h3>Explanatory structure</h3>
+            <p>Quantify how vegetation, built form, radiative surface properties, and atmospheric context contribute to UHI severity.</p>
+          </article>
+          <article class="card">
+            <h3>Forward planning</h3>
+            <p>Forecast monthly aggregate UHI trajectory so the panel can discuss seasonal risk and intervention timing with a baseline comparison.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section reveal">
+        <div class="grid-2">
+          <div class="card">
+            <h2>Pipeline at a glance</h2>
+            <div class="step-list">
+              <div class="step"><strong>1. Data fusion</strong><br />MODIS, VIIRS, ERA5-Land, NLCD, SRTM, and JRC assets are composited monthly in Google Earth Engine.</div>
+              <div class="step"><strong>2. UHI target construction</strong><br />`uhi_c = lst_day_c - rural_mean_c`, with robust fallback logic for rural reference computation.</div>
+              <div class="step"><strong>3. Cleaning and feature engineering</strong><br />DFW-only filtering, imputation, seasonality encodings, and spatial interaction terms.</div>
+              <div class="step"><strong>4. Modeling and validation</strong><br />Leakage-controlled ML (best: tuned XGBoost) plus ARIMA forecasting with seasonal-naive benchmarking.</div>
+            </div>
+          </div>
+          <div class="figure-card">
+            <img src="../outputs/figures/fig3_spatial_uhi.png" alt="Spatial UHI map" />
+            <div class="figure-body">
+              <div class="figure-title">Spatial UHI signal in DFW</div>
+              <p class="muted">Observed clustering motivated explicit spatial covariates (`lat`, `lon`, `lat2`, `lon2`, `lat_lon`) and strict in-domain filtering.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section reveal">
+        <div class="card">
+          <h2>Key numbers for the panel</h2>
+          <div class="kv" style="margin-top: 0.8rem;">
+            <div><span>Best ML MAE</span><span id="best-model-mae">...</span></div>
+            <div><span>Best ML R2</span><span id="best-model-r2">...</span></div>
+            <div><span>Seasonality-only RMSE</span><span id="seasonal-rmse">...</span></div>
+            <div><span>Seasonality-only R2</span><span id="seasonal-r2">...</span></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="inner">
+        <span>Project: Urban Heat Islands in DFW</span>
+        <span>Source: `/outputs/tables` and `/outputs/figures`</span>
+      </div>
+    </footer>
+
+    <script src="assets/js/common.js"></script>
+    <script src="assets/js/metrics.js"></script>
+  </body>
+</html>

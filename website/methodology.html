@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Methodology | DFW UHI Model</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="inner">
+        <a class="brand" href="index.html">DFW Urban Heat Model</a>
+        <button class="nav-toggle" type="button">Menu</button>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="index.html">Overview</a>
+          <a href="methodology.html">Methodology</a>
+          <a href="results.html">Results</a>
+          <a href="panel-qa.html">Panel Q&amp;A</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero reveal">
+        <div>
+          <div class="eyebrow">Methods</div>
+          <h1>Model design, assumptions, and data processing</h1>
+          <p>
+            This page captures the full technical chain used for the DFW UHI model: data reliability, preprocessing operations, variable semantics, mathematical formulations, and modeling assumptions.
+          </p>
+        </div>
+      </section>
+
+      <section class="section reveal">
+        <div class="section-header">
+          <h2>Target definition and scope</h2>
+          <p class="muted">Model domain is strictly Dallas-Fort Worth, Texas, enforced during sampling and preprocessing.</p>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <h3>UHI target</h3>
+            <p>
+              <code>uhi_c = lst_day_c - rural_mean_c</code>, where the rural baseline is computed monthly from low-impervious and high-vegetation pixels. Fallback logic ensures no null target propagation.
+            </p>
+            <p class="muted" style="margin-bottom: 0;">
+              Leakage policy: <code>lst_day_c</code> and <code>rural_mean_c</code> are excluded from model inputs because they are direct algebraic components of the target.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Model purpose</h3>
+            <ul>
+              <li>Estimate spatial variation in UHI severity across DFW.</li>
+              <li>Quantify variable influence and explanatory structure.</li>
+              <li>Forecast monthly city-scale UHI trajectory.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section reveal">
+        <div class="section-header">
+          <h2>Data sources and reliability</h2>
+        </div>
+        <div class="card table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Source</th>
+                <th>Reliability</th>
+                <th>Purpose</th>
+                <th>Features</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MOD11A2" target="_blank" rel="noreferrer">MODIS/061/MOD11A2</a></td>
+                <td>NASA LP DAAC/USGS operational thermal product with QA bands and long temporal continuity.</td>
+                <td>Primary thermal signal for UHI target and nighttime thermal context.</td>
+                <td><code>LST_Day_1km</code>, <code>LST_Night_1km</code>, <code>QC_Day</code>, <code>QC_Night</code></td>
+              </tr>
+              <tr>
+                <td><a href="https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MOD13A2" target="_blank" rel="noreferrer">MODIS/061/MOD13A2</a></td>
+                <td>NASA vegetation product with standardized retrieval and QA metadata.</td>
+                <td>Vegetation cooling proxies and rural mask condition.</td>
+                <td><code>NDVI</code>, <code>EVI</code></td>
+              </tr>
+              <tr>
+                <td><a href="https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MCD43A3" target="_blank" rel="noreferrer">MODIS/061/MCD43A3</a></td>
+                <td>NASA BRDF/albedo product based on physical inversion methods.</td>
+                <td>Surface radiative property proxy.</td>
+                <td><code>Albedo_WSA_shortwave</code></td>
+              </tr>
+              <tr>
+                <td><a href="https://developers.google.com/earth-engine/datasets/catalog/NOAA_VIIRS_DNB_MONTHLY_V1_VCMCFG" target="_blank" rel="noreferrer">NOAA/VIIRS/DNB/MONTHLY_V1/VCMCFG</a></td>
+                <td>NOAA-backed nighttime radiance series widely used for urban intensity analysis.</td>
+                <td>Human activity and urbanization proxy.</td>
+                <td><code>avg_rad</code></td>
+              </tr>
+              <tr>
+                <td><a href="https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_LAND_MONTHLY_AGGR" target="_blank" rel="noreferrer">ECMWF/ERA5_LAND/MONTHLY_AGGR</a></td>
+                <td>ECMWF Copernicus reanalysis with physically consistent meteorological reconstruction.</td>
+                <td>Atmospheric thermal context.</td>
+                <td><code>temperature_2m</code></td>
+              </tr>
+              <tr>
+                <td><a href="https://developers.google.com/earth-engine/datasets/catalog/USGS_NLCD_RELEASES_2019_REL_NLCD" target="_blank" rel="noreferrer">USGS/NLCD_RELEASES/2019_REL/NLCD</a></td>
+                <td>USGS/MRLC national baseline for land cover and imperviousness.</td>
+                <td>Built-form descriptors and urban class encoding.</td>
+                <td><code>impervious</code>, <code>landcover</code></td>
+              </tr>
+              <tr>
+                <td><a href="https://developers.google.com/earth-engine/datasets/catalog/USGS_SRTMGL1_003" target="_blank" rel="noreferrer">USGS/SRTMGL1_003</a></td>
+                <td>NASA/USGS DEM benchmark with broad scientific use.</td>
+                <td>Topographic controls on local climate variation.</td>
+                <td><code>elevation</code>, derived <code>slope</code>, <code>aspect</code></td>
+              </tr>
+              <tr>
+                <td><a href="https://developers.google.com/earth-engine/datasets/catalog/USGS_NLCD_RELEASES_2023_REL_TCC_v2023-5" target="_blank" rel="noreferrer">USGS/NLCD_RELEASES/2023_REL/TCC/v2023-5</a></td>
+                <td>USGS/USDA annual canopy product with consistent CONUS coverage.</td>
+                <td>Tree-canopy cooling capacity signal.</td>
+                <td><code>NLCD_Percent_Tree_Canopy_Cover</code></td>
+              </tr>
+              <tr>
+                <td><a href="https://developers.google.com/earth-engine/datasets/catalog/JRC_GSW1_4_GlobalSurfaceWater" target="_blank" rel="noreferrer">JRC/GSW1_4/GlobalSurfaceWater</a></td>
+                <td>European Commission JRC Landsat-derived long-horizon water dataset.</td>
+                <td>Hydrologic moderation via distance-to-water feature.</td>
+                <td><code>max_extent</code> -> <code>dist_to_water_m</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section reveal">
+        <div class="section-header">
+          <h2>Data cleaning and preprocessing (complete audit)</h2>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Earth Engine transformations</h3>
+            <ul>
+              <li>Monthly compositing from 2016-01 through 2024-12.</li>
+              <li>LST conversion to Celsius (<code>0.02 * raw - 273.15</code>).</li>
+              <li>LST quality filter using QC bits 0-1 with threshold <code>&lt;=2</code>.</li>
+              <li>NDVI/EVI scaling (<code>* 0.0001</code>), albedo scaling (<code>* 0.001</code>).</li>
+              <li>ERA5-Land <code>temperature_2m</code> converted to Celsius.</li>
+              <li>Terrain derivatives: slope and aspect from elevation.</li>
+              <li>Distance-to-water from JRC max extent mask.</li>
+              <li>Sample settings: <code>numPixels=3000</code>, <code>scale=1000</code>, <code>seed=42</code>, <code>dropNulls=False</code>, <code>tileScale=4</code>.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Tabular cleaning and model preprocessing</h3>
+            <ul>
+              <li>Drop rows with missing <code>uhi_c</code>.</li>
+              <li>Reinforce DFW-only bounds using latitude/longitude filters.</li>
+              <li>Mask out-of-range values to missing for LST, NDVI, EVI.</li>
+              <li>Median imputation for all numeric variables.</li>
+              <li>Landcover imputation to <code>-1</code> and integer cast.</li>
+              <li>Derived features: <code>is_urban</code>, <code>month_sin</code>, <code>month_cos</code>, <code>lat2</code>, <code>lon2</code>, <code>lat_lon</code>.</li>
+              <li>Numeric standardization and one-hot encoding.</li>
+              <li>De-seasonalized residual training and seasonal reconstitution at inference.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section reveal">
+        <div class="section-header">
+          <h2>Variable significance</h2>
+        </div>
+        <div class="card table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Variable group</th>
+                <th>Type</th>
+                <th>Significance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Thermal</td>
+                <td>continuous</td>
+                <td><code>uhi_c</code> is the target; night and atmospheric thermal terms capture residual heat behavior.</td>
+              </tr>
+              <tr>
+                <td>Vegetation and canopy</td>
+                <td>continuous</td>
+                <td><code>ndvi</code>, <code>evi</code>, and <code>tree_cover</code> proxy evapotranspirative and shading effects.</td>
+              </tr>
+              <tr>
+                <td>Urban form</td>
+                <td>continuous + binary + categorical</td>
+                <td><code>impervious</code>, <code>is_urban</code>, <code>landcover</code>, and <code>night_lights</code> encode built-environment intensity.</td>
+              </tr>
+              <tr>
+                <td>Radiative/topographic/hydrologic</td>
+                <td>continuous</td>
+                <td><code>albedo_wsa_sw</code>, terrain variables, and <code>dist_to_water_m</code> capture energy balance and landscape context.</td>
+              </tr>
+              <tr>
+                <td>Spatiotemporal engineered</td>
+                <td>continuous and ordinal</td>
+                <td>Cyclical month features and spatial interactions model periodicity and nonlinear geographic gradients.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section reveal">
+        <div class="grid-2">
+          <div class="card">
+            <h2>Model assumptions</h2>
+            <ul>
+              <li>DFW bounding box is an operationally adequate spatial approximation.</li>
+              <li>Monthly seasonality is stable enough for cyclical encoding and residualization.</li>
+              <li>Median imputation is acceptable under mixed-source missingness.</li>
+              <li>Predictor-target relationships are nonlinear.</li>
+              <li>SARIMA-type structure is valid for monthly aggregate forecasting.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h2>Software stack</h2>
+            <ul>
+              <li>Python 3.11</li>
+              <li><code>earthengine-api</code>, <code>geemap</code></li>
+              <li><code>pandas</code>, <code>numpy</code></li>
+              <li><code>scikit-learn</code>, <code>xgboost</code></li>
+              <li><code>statsmodels</code>, <code>tensorflow/Keras</code> (optional)</li>
+              <li><code>matplotlib</code>, <code>seaborn</code>, <code>tqdm</code></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="inner">
+        <span>Methodology mirrors the implemented code path in `src/`.</span>
+        <span>For full equations and narrative, see `paper.md`.</span>
+      </div>
+    </footer>
+
+    <script src="assets/js/common.js"></script>
+  </body>
+</html>

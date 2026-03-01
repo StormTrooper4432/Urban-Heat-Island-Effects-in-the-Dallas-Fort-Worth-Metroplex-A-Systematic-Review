@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Results | DFW UHI Model</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="inner">
+        <a class="brand" href="index.html">DFW Urban Heat Model</a>
+        <button class="nav-toggle" type="button">Menu</button>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="index.html">Overview</a>
+          <a href="methodology.html">Methodology</a>
+          <a href="results.html">Results</a>
+          <a href="panel-qa.html">Panel Q&amp;A</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero reveal">
+        <div>
+          <div class="eyebrow">Performance and Evidence</div>
+          <h1>Model results and visual diagnostics</h1>
+          <p>
+            Metrics and charts below are loaded directly from the latest pipeline outputs in <code>outputs/tables</code> and <code>outputs/figures</code>.
+          </p>
+        </div>
+        <div class="card">
+          <p class="muted" id="data-status">Loading metrics from output tables...</p>
+          <div class="metric-grid" style="margin-top: 0.8rem;">
+            <div class="metric">
+              <div class="metric-label">Best ML</div>
+              <div class="metric-value" id="best-model-name">...</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">RMSE</div>
+              <div class="metric-value" id="best-model-rmse">...</div>
+              <div class="metric-sub">Best ML model</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">ARIMA RMSE</div>
+              <div class="metric-value" id="arima-rmse">...</div>
+              <div class="metric-sub">Monthly aggregate</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">ARIMA Gain</div>
+              <div class="metric-value" id="arima-improvement">...</div>
+              <div class="metric-sub">vs seasonal naive</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section reveal">
+        <div class="grid-2">
+          <div class="card table-wrap">
+            <h2>Machine-learning model metrics</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Model</th>
+                  <th>RMSE</th>
+                  <th>MAE</th>
+                  <th>R2</th>
+                </tr>
+              </thead>
+              <tbody id="model-table-body"></tbody>
+            </table>
+          </div>
+          <div class="card table-wrap">
+            <h2>ARIMA and baseline</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Model</th>
+                  <th>RMSE</th>
+                </tr>
+              </thead>
+              <tbody id="arima-table-body"></tbody>
+            </table>
+            <h3 style="margin-top: 1rem;">Top mutual-information features</h3>
+            <ol id="top-features" class="muted" style="padding-left: 1.2rem;"></ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="section reveal">
+        <div class="section-header">
+          <h2>Figure interpretation and significance</h2>
+          <p class="muted">Each figure is paired with why it matters for model construction and evaluation.</p>
+        </div>
+        <div class="figure-grid">
+          <article class="figure-card">
+            <img src="../outputs/figures/fig1_uhi_distribution.png" alt="UHI distribution" />
+            <div class="figure-body">
+              <div class="figure-title">Figure 1: UHI distribution</div>
+              <p>Confirms a continuous target with broad spread, supporting regression design and robust error metrics.</p>
+            </div>
+          </article>
+          <article class="figure-card">
+            <img src="../outputs/figures/fig2_correlation_heatmap.png" alt="Correlation heatmap" />
+            <div class="figure-body">
+              <div class="figure-title">Figure 2: Correlation heatmap</div>
+              <p>Shows mixed dependence and collinearity, justifying nonlinear tree-based models.</p>
+            </div>
+          </article>
+          <article class="figure-card">
+            <img src="../outputs/figures/fig3_spatial_uhi.png" alt="Spatial UHI map" />
+            <div class="figure-body">
+              <div class="figure-title">Figure 3: Spatial UHI</div>
+              <p>Spatial clustering motivated explicit geographic terms and DFW-only filtering.</p>
+            </div>
+          </article>
+          <article class="figure-card">
+            <img src="../outputs/figures/fig4_uhi_timeseries.png" alt="Monthly UHI time series" />
+            <div class="figure-body">
+              <div class="figure-title">Figure 4: Monthly UHI trend</div>
+              <p>Seasonal periodicity motivated cyclical features and residualized training.</p>
+            </div>
+          </article>
+          <article class="figure-card">
+            <img src="../outputs/figures/fig5_model_predictions.png" alt="Actual vs predicted" />
+            <div class="figure-body">
+              <div class="figure-title">Figure 5: Actual vs predicted</div>
+              <p>Visual calibration diagnostic to complement RMSE/MAE/R2 summaries.</p>
+            </div>
+          </article>
+          <article class="figure-card">
+            <img src="../outputs/figures/fig6_feature_importance_XGBoostTuned.png" alt="Tuned XGBoost feature importance" />
+            <div class="figure-body">
+              <div class="figure-title">Figure 6: Feature importance (XGBoostTuned)</div>
+              <p>Identifies dominant explanatory structure after leakage controls.</p>
+            </div>
+          </article>
+          <article class="figure-card">
+            <img src="../outputs/figures/fig6_feature_importance_RandomForest.png" alt="Random forest feature importance" />
+            <div class="figure-body">
+              <div class="figure-title">Figure 6b: Feature importance (RandomForest)</div>
+              <p>Cross-model agreement on key predictors increases interpretability confidence.</p>
+            </div>
+          </article>
+          <article class="figure-card">
+            <img src="../outputs/figures/fig7_arima_forecast.png" alt="ARIMA forecast" />
+            <div class="figure-body">
+              <div class="figure-title">Figure 7: ARIMA forecast</div>
+              <p>Demonstrates monthly forecast utility and uncertainty bands with baseline comparison.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section reveal">
+        <div class="callout">
+          <h2>Interpretation for panel discussion</h2>
+          <p>
+            Cross-sectional prediction is moderate but valid under leakage controls, while temporal forecasting is comparatively strong. This supports a two-part narrative: use ML for spatial prioritization and ARIMA for monthly planning cadence.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="inner">
+        <span>Results are live-loaded from current output files.</span>
+        <span>Refresh after rerunning the pipeline to update this page.</span>
+      </div>
+    </footer>
+
+    <script src="assets/js/common.js"></script>
+    <script src="assets/js/metrics.js"></script>
+  </body>
+</html>

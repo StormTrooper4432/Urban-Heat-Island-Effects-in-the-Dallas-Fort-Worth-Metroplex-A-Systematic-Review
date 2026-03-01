@@ -1,0 +1,12 @@
+earthengine-api
+geemap
+pandas
+numpy
+scikit-learn
+xgboost
+tensorflow
+statsmodels
+matplotlib
+seaborn
+pyarrow
+tqdm
